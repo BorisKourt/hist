@@ -1,19 +1,14 @@
 (ns hist.core
-  (:require [kioo.om :refer [content set-style set-attr do-> html-content wrap substitute prepend listen append before after]]
-            [kioo.core :refer [handle-wrapper]]
+  (:require [kioo.om :refer [content set-attr do->]]
+            [kioo.core]
             [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
             [secretary.core :as secretary :include-macros true :refer [defroute]]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
             [ankha.core :as ankha]
-            [cljs.core.async :as async :refer [<! >! chan pub sub put!]]
-            [clojure.string :refer [join blank? split replace lower-case]])
-  (:require-macros [cljs.core.async.macros :refer [go go-loop]]
-                   [kioo.om :refer [defsnippet deftemplate]])
+            [clojure.string :refer [join split replace lower-case]])
+  (:require-macros [kioo.om :refer [defsnippet deftemplate]])
   (:import goog.History))
-
-(enable-console-print!)
 
 (declare without-sub with-sub)
 
@@ -139,6 +134,7 @@
 ;; It's all history
 ;; - 
 
+
 (defn babs [n]
   (cond
    (neg? n) 0
@@ -166,15 +162,17 @@
       (slice depth path)
       (bump depth path))))
 
-
 ;; -
 ;; It's a rout
 ;; -
 
 (secretary/set-config! :prefix "#")
 
-(defroute first-path #"((/[a-z0-9-]+)+)/" [path]
+(defroute first-path #"((/[a-z0-9-]+)+)/" [path _ query-params]
   (let [params (rest (split path #"/"))]
+    (if query-params
+      (let [items (js/document.querySelectorAll ".hist")]
+        (amap items idx ret (set! (.-scrollLeft (aget items idx)) 3000))))
     (cnc params)))
 
 (let [h (History.)]
@@ -195,3 +193,7 @@
  app-state
  {:target (js/document.getElementById "example")})
 
+(secretary/dispatch! "/soda/?first=true")
+(secretary/dispatch! "/soda/cola/raspberry/blue/")
+(secretary/dispatch! "/tea/black/pu-erh/")
+(secretary/dispatch! "/tea/white/local/")

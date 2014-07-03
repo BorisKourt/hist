@@ -17,11 +17,11 @@
 
   :cljsbuild {:builds {:prod {:source-paths ["src/cljs"]
                               :compiler {:output-to  "resources/js/site.js"
-                                         :source-map "resources/js/site.js.map"
+                                         ;;:source-map "resources/js/site.js.map"
                                          :output-dir "resources/js/out"
-                                         :optimizations :none
+                                         :optimizations :advanced
                                          :pretty-print  false
-                                         ;;:preamble ["includes/react.js"]
+                                         :preamble ["includes/react.js"]
                                          :externs ["includes/react.js"]
                                          :closure-warnings {:externs-validation :off
                                                             :non-standard-jsdoc :off}}}}})
