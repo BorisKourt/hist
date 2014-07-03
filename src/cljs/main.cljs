@@ -20,67 +20,61 @@
 (def app-state 
   (atom 
     {:nodes {
-     "Term 1" {
-               "Issue 1" {
-                          "Sub Issue 1" nil
-                          "Sub Issue 2" nil
-                          "Sub Issue 3" {
-                                          "Sub Issue 1" nil
-                                          "Sub Issue 2" nil
-                                          "Sub Issue 3" nil}}
-               "Issue 2" {
-                          "Sub Issue 1" nil
-                          "Sub Issue 2" nil
-                          "Sub Issue 3" nil}
-               "Issue 3" {
-                          "Sub Issue 1" nil
-                          "Sub Issue 2" nil
-                          "Sub Issue 3" nil}}
-     "Term 2" {
-               "Issue 1" {
-                          "Sub Issue 1" nil
-                          "Sub Issue 2" nil
-                          "Sub Issue 3" nil}
-               "Issue 2" {
-                          "Sub Issue 1" nil
-                          "Sub Issue 2" nil
-                          "Sub Issue 3" nil}
-               "Issue 3" {
-                          "Sub Issue 1" nil
-                          "Sub Issue 2" nil
-                          "Sub Issue 3" nil}}
-     "Term 3" {
-               "Issue 1" {
-                          "Sub Issue 1" nil
-                          "Sub Issue 2" nil
-                          "Sub Issue 3" nil}
-               "Issue 2" {
-                          "Sub Issue 1" nil
-                          "Sub Issue 2" nil
-                          "Sub Issue 3" nil}
-               "Issue 3" {
-                          "Sub Issue 1" nil
-                          "Sub Issue 2" nil
-                          "Sub Issue 3" nil}}}
+     "Soda" {
+               "Cola" {
+                          "Vanilla" nil
+                          "Cherry" nil
+                          "Raspberry" {
+                                          "Diet" nil
+                                          "Nil" nil
+                                          "Blue" nil}}
+               "Lime" {
+                          "Cola" nil
+                          "Juice" nil
+                          "Drink" nil}
+               "Lemon" {
+                          "Wide" nil
+                          "Fruity" nil
+                          "Cold" nil}}
+     "Fruit" {
+               "Citrus" {
+                          "Orange" nil
+                          "Mandarin" nil
+                          "Unique Fruit" nil}
+               "Apples" {
+                          "Mac" nil
+                          "Sugar" nil
+                          "Green" nil}
+               "Berries" {
+                          "Blackberry" nil
+                          "Blueberry" nil
+                          "Black Currant" nil}}
+     "Tea" {
+               "Black" {
+                          "Assam" nil
+                          "Yunann" nil
+                          "Pu erh" nil}
+               "Green" {
+                          "Indian" nil
+                          "Chinese" nil
+                          "South American" nil}
+               "White" {
+                          "Chinese" nil
+                          "Local" nil}}}
     :hist []
     :depth 1}))
 
 
 ;; -
-;; Templates
+;; History Widgets
 ;; -
-
-(defn get-item [[ky children]]
-   (if (empty? children)
-      (without-sub ky)
-      (with-sub ky children)))
 
 (defn concat-path [current full-path]
   (let [before (first (split-with (partial not= current) full-path))
         path (str "#/" 
                   (if (empty? before)
-                                  ""
-                                  (str (join "/" before) "/")) 
+                        ""
+                        (str (join "/" before) "/")) 
                   current 
                   "/")]
     path))
@@ -100,6 +94,11 @@
 (defsnippet hist "templates/history.html" 
   [:.hist] [data]
   {[:.hist__inner] (content (map hist__column (reverse data)))})
+
+
+;; -
+;; Build App State UI 'Tree' 
+;; -
 
 (defn process-path [title] 
   (replace (lower-case title) #" " "-"))
@@ -126,6 +125,10 @@
    {[:div :> :ul] (content (map #(get-subs % nil) data))})
 
 
+;; -
+;; Core App Template
+;; -
+
 (deftemplate main "templates/canvas.html"
   [data]
   {[:.acco-holder] (content (acco (:nodes data)))
@@ -149,9 +152,13 @@
 
 (defn bump [depth path]
   (let [last-hist (:hist @app-state)
+        last-depth (- (count (last last-hist)) 1)
+        last-hist-last (last last-hist)
         current-hist (assoc last-hist (babs (- (count last-hist) 1)) path)]
-    (swap! app-state assoc :depth depth)
-    (swap! app-state conj {:hist current-hist})))
+    (if (= (nth last-hist-last last-depth) (nth path last-depth))
+      (do (swap! app-state assoc :depth depth)
+          (swap! app-state conj {:hist current-hist}))
+      (slice depth path))))
 
 (defn cnc [path]
   (let [depth (count path)]

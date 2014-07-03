@@ -1,14 +1,96 @@
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
 body {
-	background: #555;
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+*, *:before, *:after {
+  -webkit-box-sizing: border-box; 
+  -moz-box-sizing: border-box; 
+  box-sizing: border-box;
+ }
+
+body {
+	background: #333;
 	font-family: sans-serif;
 }
+
 * {
 	transition: all 300ms;
 }
+
+strong {
+	font-weight: bold;
+}
+
 a {
 	color: #f2dc77;
 	text-decoration:none;
 	border-bottom: 2px solid transparentize(#f2dc77,0.9);
+}
+
+.menu {
+	height: 60px;
+	line-height: 60px;
+	padding: 0 20px;
+	width: 100%;
+	z-index: 1;
+	box-shadow: 0 0 10px 0 rgba(0,0,0,0.2);
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	background: rgba(255,255,255,0.9);
+	font-size: 14px;
+	color: #777;
+
+	a {
+		color: #aa6666;
+		text-shadow: 0 1px 0 #fff;
+		box-shadow: 0 2px 0 #fff;
+	}
 }
 
 .hist-holder {
@@ -17,22 +99,26 @@ a {
 	text-transform: uppercase;
 	font-size: 10px;
 	float: left;
-	margin: 20px 0 20px 4%;
+	margin: 20px 0 20px 4.5%;
+
+	&:last-of-type {
+		margin-bottom: 100px;
+	}
 
 	&.a .hist {
-		background: #433!important;
+		background: #846363!important;
 	}
 
 	&.b .hist {
-		background: #343!important;
+		background: #638463!important;
 	}
 
 	&.c .hist {
-		background: #334!important;
+		background: #636384!important;
 	}
 
 	&.d .hist {
-		background: #344!important;
+		background: #638484!important;
 	}
 
 	&.e .hist {
@@ -43,45 +129,53 @@ a {
 .acco-holder {
 	width: 25%;
 	padding-top: 20px;
-	padding-bottom: 20px;
-	padding-left: 10px;
-	box-shadow: inset -10px 0 10px -10px rgba(0,0,0,0.2), 0 0 0 1px rgba(88,88,88,0.5);
+	box-shadow: inset -3px 0px 0 0px rgb(50,50,50), inset -10px 0px 10px -10px rgba(15,15,15,0.4);
+	overflow: auto;
 }
+
 .mods {
 	position: fixed;
+	overflow: auto;
 	left: 25%;
 	top: 0;
 	height: 100%;
-	overflow: scroll;
 	width: 75%;
-	padding: 20px 20px;
+	background: #f2f2f2;
+	padding-top: 20px;
+	z-index: 3;
 }
+
 #wrapper {
 	position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-overflow: scroll;
-z-index: 1;
-	}
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	overflow: auto;
+	z-index: 1;
+	padding-bottom: 60px;
+}
+
 #example {
 	position: fixed;
 	opacity: 0.1;
-top: 0;
-right: -35%;
-width: 40%;
-height: 100%;
-overflow: scroll;
-background: #fafafa;
-box-shadow: 0 0 0px 10px rgba(25,25,25,0.2), 0 0 10px 0 #444;
-z-index: 3;
+	top: 0;
+	right: -35%;
+	width: 40%;
+	height: 100%;
+	overflow: auto;
+	background: #fff;
+	box-shadow: 0 0 10px 0 rgba(50,50,50,0.5), 0 0 0px 4px rgba(100,0,0,0.5);
+	z-index: 3;
+	padding: 40px 0 80px 10px;
+
 	&:hover {
 		right: 0%;
 		opacity: 1;
 	}
 }
-	.toggle-button {
+
+.toggle-button {
     font-weight: bold;
 }
 
