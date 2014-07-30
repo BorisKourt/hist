@@ -15,49 +15,55 @@
 (def app-state 
   (atom 
     {:nodes {
-     "Soda" {
-               "Cola" {
-                          "Vanilla" nil
-                          "Cherry" nil
-                          "Raspberry" {
-                                          "Diet" nil
-                                          "Nil" nil
-                                          "Blue" nil}}
-               "Lime" {
-                          "Cola" nil
-                          "Juice" nil
-                          "Drink" nil}
-               "Lemon" {
-                          "Wide" nil
-                          "Fruity" nil
-                          "Cold" nil}}
-     "Fruit" {
-               "Citrus" {
-                          "Orange" nil
-                          "Mandarin" nil
-                          "Unique Fruit" nil}
-               "Apples" {
-                          "Mac" nil
-                          "Sugar" nil
-                          "Green" nil}
-               "Berries" {
-                          "Blackberry" nil
-                          "Blueberry" nil
-                          "Black Currant" nil}}
-     "Tea" {
-               "Black" {
-                          "Assam" nil
-                          "Yunann" nil
-                          "Pu erh" nil}
-               "Green" {
-                          "Indian" nil
-                          "Chinese" nil
-                          "South American" nil}
-               "White" {
-                          "Chinese" nil
-                          "Local" nil}}}
-    :hist []
-    :depth 1}))
+             "Top" {
+                    "Terms" {
+                             "Root Causes" {
+                                            "Cause 1" nil
+                                            "Cause 2" nil
+                                            "Cause 3" nil}
+                             "Nail" {
+                                     "Cause 1" nil
+                                     "Cause 2" nil
+                                     "Cause 3" nil}
+                             "Blur" {
+                                     "Cause 1" nil
+                                     "Cause 2" nil
+                                     "Cause 3" nil}
+                             "Shampoo" {
+                                        "Cause 1" nil
+                                        "Cause 2" nil
+                                        "Cause 3" nil}
+                             "Product" {
+                                        "Cause 1" nil
+                                        "Cause 2" nil
+                                        "Cause 3" nil}
+                             "Strip" {
+                                      "Cause 1" nil
+                                      "Cause 2" nil
+                                      "Cause 3" nil}
+                             "Hair" {
+                                     "Cause 1" nil
+                                     "Cause 2" nil
+                                     "Cause 3" nil}}
+                    "Top 10 Themes" nil
+                    "Gender" {
+                              "Male" nil
+                              "Female" nil}
+                    "Emotion" nil
+                    "Sentiment" {
+                                 "Postive" nil
+                                 "Neutral" nil
+                                 "Negatvive" nil}
+
+                    "Data Source" {
+                                   "Twitter" nil
+                                   "Facebook" nil
+                                   "LinkedIn" nil
+                                   "Klour" nil
+                                   }
+                    }}
+     :hist []
+     :depth 1}))
 
 
 ;; -
@@ -193,7 +199,4 @@
  app-state
  {:target (js/document.getElementById "example")})
 
-(secretary/dispatch! "/soda/?first=true")
-(secretary/dispatch! "/soda/cola/raspberry/blue/")
-(secretary/dispatch! "/tea/black/pu-erh/")
-(secretary/dispatch! "/tea/white/local/")
+(secretary/dispatch! "/top/?first=true")

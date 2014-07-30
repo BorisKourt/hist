@@ -157,6 +157,7 @@ a {
 }
 
 #example {
+	will-change: width, opacity;
 	position: fixed;
 	opacity: 0.1;
 	top: 0;
@@ -222,6 +223,7 @@ a {
 .object .key:after {
     content: ":";
 }
+
 
 @import "histograph";
 @import "accordion";

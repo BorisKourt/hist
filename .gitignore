@@ -2,3 +2,6 @@
 resources/js/
 resources/css/
 src/includes/
+target/
+*.swp
+.lein-repl-history
