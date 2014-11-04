@@ -1,8 +1,8 @@
 (ns hist.core
-  (:require [kioo.om :refer [content set-attr do->]]
+  (:require [kioo.om :refer [do-> set-attr content html-content]]
             [kioo.core]
-            [om.core :as om :include-macros true]
-            [secretary.core :as secretary :include-macros true :refer [defroute]]
+            [om.core :as om :refer-macros []]
+            [secretary.core :as secretary :refer-macros [defroute]]
             [goog.events :as events]
             [goog.history.EventType :as EventType]
             [ankha.core :as ankha]
@@ -12,59 +12,32 @@
 
 (declare without-sub with-sub)
 
-(def app-state 
-  (atom 
-    {:nodes {
-             "Top" {
-                    "Terms" {
-                             "Root Causes" {
-                                            "Cause 1" nil
-                                            "Cause 2" nil
-                                            "Cause 3" nil}
-                             "Nail" {
-                                     "Cause 1" nil
-                                     "Cause 2" nil
-                                     "Cause 3" nil}
-                             "Blur" {
-                                     "Cause 1" nil
-                                     "Cause 2" nil
-                                     "Cause 3" nil}
-                             "Shampoo" {
-                                        "Cause 1" nil
-                                        "Cause 2" nil
-                                        "Cause 3" nil}
-                             "Product" {
-                                        "Cause 1" nil
-                                        "Cause 2" nil
-                                        "Cause 3" nil}
-                             "Strip" {
-                                      "Cause 1" nil
-                                      "Cause 2" nil
-                                      "Cause 3" nil}
-                             "Hair" {
-                                     "Cause 1" nil
-                                     "Cause 2" nil
-                                     "Cause 3" nil}}
-                    "Top 10 Themes" nil
-                    "Gender" {
-                              "Male" nil
-                              "Female" nil}
-                    "Emotion" nil
-                    "Sentiment" {
-                                 "Postive" nil
-                                 "Neutral" nil
-                                 "Negatvive" nil}
+(def nested-data
+  (atom
+    {:1 {:name "Top" :sub [:2 :3]}
+     :2 {:name "Top 1"}
+     :3 {:name "Top 2"}
 
-                    "Data Source" {
-                                   "Twitter" nil
-                                   "Facebook" nil
-                                   "LinkedIn" nil
-                                   "Klour" nil
-                                   }
-                    }}
-     :hist []
-     :depth 1}))
+     :4 {:name "Section" :sub [:5]}
+     :5 {:name "Subsection" :sub [:6 :7]}
+     :6 {:name "Item 1"}
+     :7 {:name "Item 2"}
 
+     :8 {:name "Simple" :sub [:9]}
+     :9 {:name "History"}}))
+
+(def history-state
+  (atom
+    [[{:1 true}]]))
+
+
+
+(defn node-from-key [k data]
+  {k (k data)})
+
+(defn subs-from-key [k data]
+  (if-let [subs (:sub (k data))]
+    (conj (map #(node-from-key % data) subs))))
 
 ;; -
 ;; History Widgets
@@ -72,59 +45,45 @@
 
 (defn concat-path [current full-path]
   (let [before (first (split-with (partial not= current) full-path))
-        path (str "#/" 
+        path (str "#/"
                   (if (empty? before)
-                        ""
-                        (str (join "/" before) "/")) 
-                  current 
+                    ""
+                    (str (join "/" (map #(name (first (keys %))) before)) "/"))
+                  (name (first (keys current)))
                   "/")]
     path))
 
-(defsnippet hist__item "templates/history.html" 
-  [:.hist__item] [data path])
+(defsnippet hist__item "templates/history.html"
+  [:.inactive] [data path]
+  {[:.hist__item] (content "")})
 
-(defsnippet hist__item--active "templates/history.html" 
+(defsnippet hist__item--active "templates/history.html"
   [:.active] [data path]
-  {[:a]           (set-attr :href (concat-path data path) :title data)
-   [:.hist__node__label] (content data)})
+  {[:a] (set-attr :href (concat-path data path)
+                  :title (:name ((first (keys data)) @nested-data)))
+   [:.hist__node__label] (content (:name ((first (keys data)) @nested-data)))})
 
-(defsnippet hist__column "templates/history.html" 
-  [:.hist__column] [data]
-  {[:.hist__column] (content (map #(hist__item--active % data) data))})
+(defn check-node [data]
+   (map (fn [item]
+         (cond
+           (first (vals item)) (hist__item--active item data)
+           :else (hist__item item data)))
+       data))
 
-(defsnippet hist "templates/history.html" 
+(defsnippet hist__column "templates/history.html"
+            [:.hist__column] [data]
+            {[:.hist__column] (content (check-node data))})
+
+(defsnippet hist "templates/history.html"
   [:.hist] [data]
   {[:.hist__inner] (content (map hist__column (reverse data)))})
 
 
 ;; -
-;; Build App State UI 'Tree' 
+;; Build App State UI 'Tree'
 ;; -
 
-(defn process-path [title] 
-  (replace (lower-case title) #" " "-"))
-
-(defn get-subs [[ky children] prev-path]
-  (let [path (if prev-path 
-               (str prev-path (process-path ky) "/")
-               (str (process-path ky) "/"))]
-   (if (empty? children)
-      (without-sub ky nil path)
-      (with-sub ky children path))))
-
-(defsnippet with-sub "templates/accordion.html" [:.with-sub] [ky children path]
-   {[:li :> :a] (do-> (content ky)
-                      (set-attr :href (str "#/" path)))
-    [:li :> :ul] (content (map #(get-subs % path) children))})
-
-
-(defsnippet without-sub "templates/accordion.html" [:.without-sub] [ky _ path]
-   {[:li :> :a] (do-> (content ky)
-                      (set-attr :href (str "#/" path)))})
-
-(defsnippet acco "templates/accordion.html" [:.accordion] [data]
-   {[:div :> :ul] (content (map #(get-subs % nil) data))})
-
+(defsnippet acco2 "templates/accordion.html" [:.accordion] [])
 
 ;; -
 ;; Core App Template
@@ -132,40 +91,70 @@
 
 (deftemplate main "templates/canvas.html"
   [data]
-  {[:.acco-holder] (content (acco (:nodes data)))
-   [:.hist-holder] (content (hist (:hist data)))})
+  {[:.acco-holder] (content (acco2))
+   [:.jhist-one]   (content (hist data))
+   [:.hist-holder] (content (hist data))})
 
 
 ;; -
 ;; It's all history
-;; - 
-
+;; -
 
 (defn babs [n]
   (cond
-   (neg? n) 0
-   :else n))
+    (neg? n) 0
+    :else n))
 
-(defn slice [depth path]
-  (let [last-hist (:hist @app-state)
-        current-hist (conj last-hist path)]
-    (swap! app-state assoc :depth depth)
-    (swap! app-state conj {:hist current-hist})))
+(defn adjust-state [raw-path last-path]
+  (loop [i (- (count last-path) 1) items []]
+    (if (zero? i)
+      (conj items (last last-path))
+      (recur (dec i)
+             (if (= (keys (nth raw-path (- i 1)))
+                    (keys (nth last-path (- i 1))))
+               (conj items {(-> last-path (nth (- i 1)) keys first) false})
+               (conj items {(-> last-path (nth (- i 1)) keys first) true }))))))
+
+(defn prep-path [raw-path last-path]
+  (println "prep-path")
+  (if (and (= (keys (first raw-path)) (keys (first last-path)))
+           (or (= (- (count raw-path) 1) (count last-path))
+               (= (- (count last-path) 1) (count raw-path))
+               (= (count last-path) (count raw-path))))
+    (adjust-state raw-path last-path)
+    raw-path))
+
+(defn cut [depth raw-path last-hist]
+  (let [path (prep-path raw-path (last @history-state))
+        log (println "cut")]
+    (if (not= path raw-path)
+      (swap! history-state assoc (babs (- (count last-hist) 1)) path))
+    (swap! history-state conj raw-path)))
 
 (defn bump [depth path]
-  (let [last-hist (:hist @app-state)
-        last-depth (- (count (last last-hist)) 1)
-        last-hist-last (last last-hist)
-        current-hist (assoc last-hist (babs (- (count last-hist) 1)) path)]
-    (if (= (nth last-hist-last last-depth) (nth path last-depth))
-      (do (swap! app-state assoc :depth depth)
-          (swap! app-state conj {:hist current-hist}))
-      (slice depth path))))
+  (let [hist @history-state
+        last-depth (- (count (last hist)) 1)
+        last-item (last hist)
+        log (println "bump")]
+    (if (= (keys (nth last-item last-depth))
+           (keys (nth path last-depth)))
+      (do
+        (println "bump A")
+        (swap! history-state assoc (babs (- (count hist) 1)) path))
+      (do
+        (println "bump B")
+        (cut depth path hist)))))
 
-(defn cnc [path]
-  (let [depth (count path)]
-    (if (<= depth (:depth @app-state))
-      (slice depth path)
+(defn mod-path [raw-path]
+  (println "mod-path")
+  (mapv #(into {} {% true}) raw-path))
+
+(defn cnc [raw-path]
+  (let [depth (count raw-path)
+        path (mod-path raw-path)
+        log (println "cnc")]
+    (if (<= depth (count (last @history-state)))
+      (cut depth path @history-state)
       (bump depth path))))
 
 ;; -
@@ -175,7 +164,8 @@
 (secretary/set-config! :prefix "#")
 
 (defroute first-path #"((/[a-z0-9-]+)+)/" [path _ query-params]
-  (let [params (rest (split path #"/"))]
+  (let [params (mapv keyword (rest (split path #"/")))
+        print (println params)]
     (if query-params
       (let [items (js/document.querySelectorAll ".hist")]
         (amap items idx ret (set! (.-scrollLeft (aget items idx)) 3000))))
@@ -192,11 +182,11 @@
 
 (defn init [data] (om/component (main data)))
 
-(om/root init app-state {:target  (. js/document (getElementById "wrapper"))})
+(om/root init history-state {:target  (. js/document (getElementById "wrapper"))})
 
 (om/root
- ankha/inspector
- app-state
- {:target (js/document.getElementById "example")})
+  ankha/inspector
+  history-state
+  {:target (js/document.getElementById "example")})
 
-(secretary/dispatch! "/top/?first=true")
+(secretary/dispatch! "/1/2/?first=true")

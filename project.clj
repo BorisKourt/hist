@@ -1,17 +1,19 @@
-(defproject boriskourt-hist "0.2.3"
+(defproject boriskourt-hist "0.6"
   :description "Demo for Histograph"
   :url "-"
   
-  :dependencies [[org.clojure/clojure "1.6.0"]
-                 [org.clojure/clojurescript "0.0-2277"]
+  :dependencies [[org.clojure/clojure "1.7.0-alpha3"]
+                 [org.clojure/clojurescript "0.0-2371"]
                  [kioo "0.4.1-SNAPSHOT"]
-                 [om "0.6.5"]
-                 [ankha "0.1.4-SNAPSHOT"]
-                 [org.clojure/core.async "0.1.303.0-886421-alpha"]
-                 [secretary "1.2.0"]]
+                 [om "0.7.3"]
+                 [ankha "0.1.4"]
+                 [org.clojure/core.async "0.1.346.0-17112a-alpha"]
+                 [secretary "1.2.1"]
+                 [org.clojure/core.typed "0.2.72"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]
-            [lein-ancient "0.6.0-SNAPSHOT"]]
+            [lein-ancient "0.6.0-SNAPSHOT"]
+            [lein-gorilla "0.3.2" :exclusions [org.clojure/clojure]]]
 
   :source-paths ["src"]
   :resource-paths ["resources"]

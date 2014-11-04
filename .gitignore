@@ -5,3 +5,7 @@ src/includes/
 target/
 *.swp
 .lein-repl-history
+
+boriskourt_hist.iml
+.idea
+.nrepl-port
